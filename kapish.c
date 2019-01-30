@@ -22,7 +22,7 @@
 */
 
 //Take a line of user input
-void read_stdin(char* buf){
+void read_stdin(char** buf){
 	//Current position within input string
 	int pos = 0;
 
