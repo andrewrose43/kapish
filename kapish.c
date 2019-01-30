@@ -1,7 +1,9 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #define MAX_CHARS 512
+#define WHITESPACES " \t\r\n\a"
 
 /*int main(int argc, char **argv){
 	while(1){
@@ -57,6 +59,35 @@ void read_stdin(char** buf){
 	}
 }
 
+void split_args(char*** destination, char** buf){
+	
+	//the argument dump location
+	*destination = malloc(sizeof(char*) * MAX_CHARS);
+	//individual token temporary storage
+	char *tok;
+
+	//Current position within input string
+	int pos = 0;
+
+	if (!*destination){
+		fprintf(stderr, "Memory allocation error!\n");
+		exit(EXIT_FAILURE);
+	}
+	
+	tok = strtok(*buf, WHITESPACES);
+
+	while (tok!=NULL){
+		(*destination)[pos++] = tok;
+		
+		if (pos >= MAX_CHARS){
+			fprintf(stderr, "String too long passed to split_args somehow!\n");
+			exit(EXIT_FAILURE);
+		}
+		//Next token
+		tok = strtok(NULL, WHITESPACES);
+	}
+}
+
 int main(int argc, char **argv){
 
 	//load config files here
@@ -64,13 +95,19 @@ int main(int argc, char **argv){
 	
 	//Buffer to contain user input
 	char *buf;
+	//Argument storage
+	char **args;
 
 	int keep_running = 1; //keep looping the shell while this is truthy
 	while(keep_running){
 		printf("? ");
 		read_stdin(&buf);
+		split_args(&args, &buf);
+
+		printf("\n%s\n", args[0]);
 
 		free(buf);
+		free(args);
 
 		//REMOVE
 		keep_running = 0;
