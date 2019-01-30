@@ -19,6 +19,43 @@
 }
 */
 
+//Take a line of user input
+void read_stdin(char** buf){
+	//Current position within input string
+	int pos = 0;
+
+	//Storage for input characters
+	char c;
+
+	//Allocate memory for input string
+	*buf = malloc(sizeof(char)*MAX_CHARS);
+
+	if(!*buf){
+		fprintf(stderr, "Memory allocation error!\n");
+		exit(EXIT_FAILURE);
+	}
+
+	while(1){
+		//Take a character from stdin
+		c = getc(stdin);
+
+		//Handle too-long inputs
+		if (pos >= MAX_CHARS-1){
+			fprintf(stderr, "Your input was too long!\n");
+			exit(EXIT_FAILURE);
+		}
+		//If we reach a newline or EOF, replace with \0 and return
+		if (c=='\n' || c==EOF){
+			*buf[pos] = '\0';
+			return;
+		}
+		else {
+			*buf[pos] = c;
+		}
+		pos++;
+	}
+}
+
 int main(int argc, char **argv){
 
 	//load config files here
@@ -38,36 +75,4 @@ int main(int argc, char **argv){
 
 	free(buf);
 	exit(0);
-}
-
-//Take a line of user input
-void read_stdin(char** buf){
-	//Current position within input string
-	int pos = 0;
-	*buf = malloc(sizeof(char)*MAX_CHARS);
-
-	if(!*buf){
-		fprintf(stderr, "Memory allocation error!\n");
-		exit(EXIT_FAILURE);
-	}
-
-	while(1){
-		//Take a character from stdin
-		c = getc(stdin);
-
-		//Handle too-long inputs
-		if (pos >= 511){
-			fprintf(stderr, "Your input was too long!\n");
-			exit(EXIT_FAILURE);
-		}
-		//If we reach a newline or EOF, replace with \0 and return
-		if (c=='\n' || c==EOF){
-			*buf[pos] = '\0';
-			return;
-		}
-		else {
-			*buf[pos] = c;
-		}
-		pos++;
-	}
 }
