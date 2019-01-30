@@ -36,8 +36,6 @@ void read_stdin(char** buf){
 	}
 
 	while(1){
-		printf("starting the %dth loop\n", pos);
-		printf("the input is %s\n", *buf);
 		//Take a character from stdin
 		c = getchar();
 
@@ -47,19 +45,14 @@ void read_stdin(char** buf){
 			exit(EXIT_FAILURE);
 		}
 		//If we reach a newline or EOF, replace with \0 and return
-		printf("at position %d\n", pos);
 		if (c=='\n' || c==EOF){
-			printf("In the if block bc c is a newline or null\n");
-			*buf[pos] = '\0';
+			(*buf)[pos] = '\0';
 			return;
 		}
 		//else we add a character to the buffer
 		else {
-			printf("In the else block bc c, with value %c, is not a newline or null\n", c);
-			//that next line is somehow the problem
-			*buf[pos] = c;
+			(*buf)[pos] = c;
 		}
-		printf("survived the %dth loop\n", pos);
 		pos++;
 	}
 }
@@ -75,10 +68,12 @@ int main(int argc, char **argv){
 	int keep_running = 1; //keep looping the shell while this is truthy
 	while(keep_running){
 		printf("? ");
-		keep_running = 0;
 		read_stdin(&buf);
 
 		free(buf);
+
+		//REMOVE
+		keep_running = 0;
 	}
 
 	free(buf);
