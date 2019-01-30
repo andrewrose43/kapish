@@ -1,4 +1,4 @@
-FLAGS = -Wall -Werror -std=c99
+FLAGS = -Wall -Werror -std=c99 -g
 % : %.c
-	gcc -g -O $< -o $@.o $(FLAGS)
-	gcc -g $< -o $@ $(FLAGS)
+	gcc -O $< -o $@.o $(FLAGS)
+	gcc $< -o $@ $(FLAGS)
