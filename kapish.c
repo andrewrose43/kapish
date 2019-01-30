@@ -20,24 +20,14 @@
 */
 
 //Take a line of user input
-void read_stdin(char** buf){
+void read_stdin(char* buf){
 	//Current position within input string
 	int pos = 0;
 
 	//Storage for input characters
 	char c;
 
-	//Allocate memory for input string
-	*buf = malloc(sizeof(char)*MAX_CHARS);
-	//Make sure malloc worked
-	if(!*buf){
-		fprintf(stderr, "Memory allocation error!\n");
-		exit(EXIT_FAILURE);
-	}
-
 	while(1){
-		printf("starting the %dth loop\n", pos);
-		printf("the input is %s\n", *buf);
 		//Take a character from stdin
 		c = getchar();
 
@@ -47,19 +37,15 @@ void read_stdin(char** buf){
 			exit(EXIT_FAILURE);
 		}
 		//If we reach a newline or EOF, replace with \0 and return
-		printf("at position %d\n", pos);
 		if (c=='\n' || c==EOF){
-			printf("In the if block bc c is a newline or null\n");
-			*buf[pos] = '\0';
+			buf[pos] = '\0';
 			return;
 		}
 		//else we add a character to the buffer
 		else {
-			printf("In the else block bc c, with value %c, is not a newline or null\n", c);
 			//that next line is somehow the problem
-			*buf[pos] = c;
+			buf[pos] = c;
 		}
-		printf("survived the %dth loop\n", pos);
 		pos++;
 	}
 }
@@ -70,17 +56,27 @@ int main(int argc, char **argv){
 	//.kapishrc
 	
 	//Buffer to contain user input
-	char *buf;
+	char *buf = NULL;
 
 	int keep_running = 1; //keep looping the shell while this is truthy
 	while(keep_running){
+
+		//Allocate memory for input string
+		buf = malloc(sizeof(char)*MAX_CHARS);
+		//Make sure malloc worked
+		if(!buf){
+			fprintf(stderr, "Memory allocation error!\n");
+			exit(EXIT_FAILURE);
+		}
+
 		printf("? ");
 		keep_running = 0;
-		read_stdin(&buf);
+		read_stdin(buf);
+		printf("buf is %s in main\n", buf);
 
 		free(buf);
 	}
 
-	free(buf);
+	//free(buf);
 	exit(0);
 }
