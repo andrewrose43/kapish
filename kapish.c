@@ -1,6 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
+#include <sys/wait.h>
 
 #define MAX_CHARS 512
 #define WHITESPACES " \t\r\n\a"
@@ -20,6 +22,11 @@
 	}
 }
 */
+
+void read_stdin(char** buf);
+void split_args(char*** destination, char** buf);
+int kachow(char** args);
+int launch(char** args);
 
 //Take a line of user input
 void read_stdin(char** buf){
@@ -108,9 +115,7 @@ int kachow(char** args){
 		return 0;
 	}
 	//Executable
-	else {
-		return launch(args);
-	}
+	return launch(args);
 }
 
 int launch(char **args){
