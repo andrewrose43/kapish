@@ -10,13 +10,13 @@ int unsetenv(const char *var_name);
 #define MAX_CHARS 512
 #define WHITESPACES " \t\r\n\a"
 
-int read_line(char** buf);
+int read_stdin(char** buf);
 void split_args(char*** destination, char** buf);
 int kachow(char** args);
 int launch(char** args);
 
 //Take a line of user input
-int read_line(char** buf){
+int read_stdin(char** buf){
 	printf("ok so far\n");
 	
 	//Allocate memory for input string
@@ -178,14 +178,19 @@ int main(int argc, char **argv){
 	char **args;
 
 	//.kapishrc loop goes here
+	//open .kapishrc
+	FILE *config_script = fopen(strncat(getenv("HOME"), ".kapishrc", 9), "r");
+	while (fgets(buf, MAX_CHARS, config_script)){
+		printf("? ");
 
+	}
 
 	int keep_running = 1; //keep looping the shell while this is truthy
 
 	while(keep_running){
 
 		printf("? ");
-		if (!read_line(&buf)){
+		if (!read_stdin(&buf)){
 			free(buf);
 			break;
 		}
