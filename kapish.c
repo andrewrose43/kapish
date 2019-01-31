@@ -5,6 +5,7 @@
 #include <sys/wait.h>
 
 int setenv(const char *var_name, const char *new_value, int change_flag);
+int unsetenv(const char *var_name);
 
 #define MAX_CHARS 512
 #define WHITESPACES " \t\r\n\a"
@@ -16,6 +17,15 @@ int launch(char** args);
 
 //Take a line of user input
 int read_stdin(char** buf){
+	
+	//Allocate memory for input string
+	*buf = malloc(sizeof(char)*MAX_CHARS);
+	//Make sure malloc worked
+	if(!*buf){
+		fprintf(stderr, "Memory allocation error!\n");
+		exit(EXIT_FAILURE);
+	}
+
 	//Current position within input string
 	int pos = 0;
 
@@ -80,6 +90,7 @@ void split_args(char*** destination, char** buf){
 //Showtime
 int kachow(char** args){
 
+	printf("pre-no-args");
 	//if no arguments provided, continue
 	if (args[0]==NULL) return 1;
 		
@@ -87,19 +98,23 @@ int kachow(char** args){
 	if (strcmp(args[0], "setenv")==0){
 		if (args[1]==NULL){
 			perror("No environment variable specified");
-			return 1;
 		}	
 		else if (args[2]==NULL){
 			setenv(args[1], NULL, 9001);
-			return 1;
 		}
 		else {
 			setenv(args[1], args[2], 9001);
-			return 1;
 		}
+		return 1;
 	}
 	else if (strcmp(args[0], "unsetenv")==0){
-		
+		if (args[1]==NULL){
+			perror("No environment variable specified");
+		}	
+		else {
+			unsetenv(args[1]);
+		}
+		return 1;
 	}
 	else if (strcmp(args[0], "cd")==0){
 		if (args[1] == NULL){
@@ -158,14 +173,6 @@ int main(int argc, char **argv){
 
 	int keep_running = 1; //keep looping the shell while this is truthy
 	while(keep_running){
-
-		//Allocate memory for input string
-		buf = malloc(sizeof(char)*MAX_CHARS);
-		//Make sure malloc worked
-		if(!buf){
-			fprintf(stderr, "Memory allocation error!\n");
-			exit(EXIT_FAILURE);
-		}
 
 		printf("? ");
 		if (!read_stdin(&buf)) break;
