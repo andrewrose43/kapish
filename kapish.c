@@ -87,13 +87,13 @@ int kachow(char** args){
 	if (args[0]==NULL) return 1;
 		
 	//Built-in functions
-	if (args[0] == "setenv"){
+	if (strcmp(args[0], "setenv")==0){
 		
 	}
-	else if (args[0] == "unsetenv"){
+	else if (strcmp(args[0], "unsetenv")==0){
 		
 	}
-	else if (args[0] == "cd"){
+	else if (strcmp(args[0], "cd")==0){
 		if (args[1] == NULL){
 			//cd to HOME
 		}	
@@ -104,7 +104,7 @@ int kachow(char** args){
 		}
 		return 1;
 	}
-	else if (args[0] == "exit"){
+	else if (strcmp(args[0], "exit")==0){
 		return 0;
 	}
 	//Executable
