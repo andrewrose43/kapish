@@ -17,6 +17,7 @@ int launch(char** args);
 
 //Take a line of user input
 int read_stdin(char** buf){
+	printf("ok so far\n");
 	
 	//Allocate memory for input string
 	*buf = malloc(sizeof(char)*MAX_CHARS);
@@ -85,18 +86,19 @@ void split_args(char*** destination, char** buf){
 		//Next token
 		tok = strtok(NULL, WHITESPACES);
 	}
+
 }
 
 //Showtime
 int kachow(char** args){
 
-	printf("pre-no-args");
 	//if no arguments provided, continue
 	if (args[0]==NULL) return 1;
 		
 	//Built-in functions
 	if (strcmp(args[0], "setenv")==0){
 		if (args[1]==NULL){
+	printf("recognized args[1]==NULL correctly\n");
 			perror("No environment variable specified");
 		}	
 		else if (args[2]==NULL){
@@ -109,9 +111,11 @@ int kachow(char** args){
 	}
 	else if (strcmp(args[0], "unsetenv")==0){
 		if (args[1]==NULL){
+	printf("recognized args[1]==NULL correctly\n");
 			perror("No environment variable specified");
 		}	
 		else {
+			printf("args[1] is not null");
 			unsetenv(args[1]);
 		}
 		return 1;
@@ -178,13 +182,12 @@ int main(int argc, char **argv){
 		if (!read_stdin(&buf)) break;
 		split_args(&args, &buf);
 
-
 		//EXECUTE
 		keep_running = kachow(args);
 
-		printf("\n%s\n", args[0]);
-
 		free(buf);
+		if (buf==NULL) printf("buf is null\n");
+		else printf("buf is not null\n");
 		free(args);
 	}
 
