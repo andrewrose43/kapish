@@ -10,13 +10,13 @@ int unsetenv(const char *var_name);
 #define MAX_CHARS 512
 #define WHITESPACES " \t\r\n\a"
 
-int read_stdin(char** buf);
+int read_line(char** buf);
 void split_args(char*** destination, char** buf);
 int kachow(char** args);
 int launch(char** args);
 
 //Take a line of user input
-int read_stdin(char** buf){
+int read_line(char** buf){
 	printf("ok so far\n");
 	
 	//Allocate memory for input string
@@ -122,7 +122,9 @@ int kachow(char** args){
 	}
 	else if (strcmp(args[0], "cd")==0){
 		if (args[1] == NULL){
-			//cd to HOME
+			if (chdir(getenv("HOME"))!=0){
+				perror("Error changing directory");
+			}
 		}	
 		else{
 			if (chdir(args[1])!=0){
@@ -183,7 +185,7 @@ int main(int argc, char **argv){
 	while(keep_running){
 
 		printf("? ");
-		if (!read_stdin(&buf)){
+		if (!read_line(&buf)){
 			free(buf);
 			break;
 		}
