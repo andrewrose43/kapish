@@ -80,6 +80,33 @@ void split_args(char*** destination, char** buf){
 	}
 }
 
+int launch(char **args){
+	int status;
+	int pid = fork();
+
+	if (pid<0){
+		//fork failed
+		//print error message and keep going
+		perror("Fork failed");
+	}
+	else if (pid==0){
+		//CHILD
+		if (execvp(args[0], args) == -1) { //this is where it switches to the new process
+			perror("Fork failed");
+		}
+		exit(EXIT_FAILURE); //exit_failure if execvp did not change processes
+	}
+	else{
+		//in this case, it's a parent process
+		do{
+			//wait for the child to finish
+			waitpid(pid, &status, WUNTRACED);
+		//while the child has not finished
+		}while (!WIFEXITED(status));
+	}
+	return 1;
+}
+
 int main(int argc, char **argv){
 
 	//load config files here
@@ -104,6 +131,9 @@ int main(int argc, char **argv){
 		printf("? ");
 		read_stdin(&buf);
 		split_args(&args, &buf);
+
+		//EXECUTE
+		kachow(args);
 
 		printf("\n%s\n", args[0]);
 
