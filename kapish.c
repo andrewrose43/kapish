@@ -115,7 +115,7 @@ int kachow(char** args){
 			perror("No environment variable specified");
 		}	
 		else {
-			printf("args[1] is not null");
+			printf("args[1] is not null\n");
 			unsetenv(args[1]);
 		}
 		return 1;
@@ -175,11 +175,18 @@ int main(int argc, char **argv){
 	//Argument storage
 	char **args;
 
+	//.kapishrc loop goes here
+
+
 	int keep_running = 1; //keep looping the shell while this is truthy
+
 	while(keep_running){
 
 		printf("? ");
-		if (!read_stdin(&buf)) break;
+		if (!read_stdin(&buf)){
+			free(buf);
+			break;
+		}
 		split_args(&args, &buf);
 
 		//EXECUTE
@@ -190,7 +197,5 @@ int main(int argc, char **argv){
 		else printf("buf is not null\n");
 		free(args);
 	}
-
-	//free(buf);
 	exit(0);
 }
