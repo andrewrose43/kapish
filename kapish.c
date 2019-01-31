@@ -9,6 +9,7 @@ int unsetenv(const char *var_name);
 
 #define MAX_CHARS 512
 #define WHITESPACES " \t\r\n\a"
+#define CONFIG_SCRIPT_NAME ".kapishrc"
 
 int read_stdin(char** buf);
 void split_args(char*** destination, char** buf);
@@ -42,6 +43,7 @@ int read_stdin(char** buf){
 			return 0;
 		}
 		//Handle too-long inputs
+		//note: this was not required by the assignment
 		if (pos >= MAX_CHARS-1){
 			fprintf(stderr, "Your input was too long!\n");
 			exit(EXIT_FAILURE);
@@ -169,9 +171,6 @@ int launch(char **args){
 
 int main(int argc, char **argv){
 
-	//load config files here
-	//.kapishrc
-	
 	//Buffer to contain user input
 	char *buf;
 	//Argument storage
@@ -179,11 +178,24 @@ int main(int argc, char **argv){
 
 	//.kapishrc loop goes here
 	//open .kapishrc
-	FILE *config_script = fopen(strncat(getenv("HOME"), ".kapishrc", 9), "r");
-	while (fgets(buf, MAX_CHARS, config_script)){
-		printf("? ");
-
+	FILE *config_script = fopen(strncat(getenv("HOME"), CONFIG_SCRIPT_NAME, 9), "r");
+	//ensure file opened correctly
+	if (config_script==NULL){
+		perror("unable to open %s", CONFIG_SCRIPT_NAME);
+		exit(1);
 	}
+
+	//Allocate memory for input string
+	*buf = malloc(sizeof(char)*MAX_CHARS);
+
+	while (fgets(buf, MAX_CHARS, config_script)){
+		printf("? %s", buf);
+		split_args(&args, &buf);
+		//execute
+		kachow(args);
+	}
+	free(buf);
+	free(args);
 
 	int keep_running = 1; //keep looping the shell while this is truthy
 
@@ -200,8 +212,6 @@ int main(int argc, char **argv){
 		keep_running = kachow(args);
 
 		free(buf);
-		if (buf==NULL) printf("buf is null\n");
-		else printf("buf is not null\n");
 		free(args);
 	}
 	exit(0);
