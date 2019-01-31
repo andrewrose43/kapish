@@ -80,6 +80,39 @@ void split_args(char*** destination, char** buf){
 	}
 }
 
+//Showtime
+int kachow(char** args){
+
+	//if no arguments provided, continue
+	if (args[0]==NULL) return 1;
+		
+	//Built-in functions
+	if (args[0] == "setenv"){
+		
+	}
+	else if (args[0] == "unsetenv"){
+		
+	}
+	else if (args[0] == "cd"){
+		if (args[1] == NULL){
+			//cd to HOME
+		}	
+		else{
+			if (chdir(args[1])!=0){
+				perror("Error changing directory");
+			}
+		}
+		return 1;
+	}
+	else if (args[0] == "exit"){
+		return 0;
+	}
+	//Executable
+	else {
+		return launch(args);
+	}
+}
+
 int launch(char **args){
 	int status;
 	int pid = fork();
@@ -133,15 +166,12 @@ int main(int argc, char **argv){
 		split_args(&args, &buf);
 
 		//EXECUTE
-		kachow(args);
+		keep_running = kachow(args);
 
 		printf("\n%s\n", args[0]);
 
 		free(buf);
 		free(args);
-
-		//REMOVE
-		keep_running = 0;
 	}
 
 	//free(buf);
