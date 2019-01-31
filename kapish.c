@@ -4,32 +4,18 @@
 #include <unistd.h>
 #include <sys/wait.h>
 
+int setenv(const char *var_name, const char *new_value, int change_flag);
+
 #define MAX_CHARS 512
 #define WHITESPACES " \t\r\n\a"
 
-/*int main(int argc, char **argv){
-	while(1){
-		printf("$ ");
-		char *cmd = get_next_command();
-		int pid = fork();
-		if (pid==0){
-			exec(cmd);
-			panic("exec failed!");
-		}
-		else{
-			wait(pid);
-		}
-	}
-}
-*/
-
-void read_stdin(char** buf);
+int read_stdin(char** buf);
 void split_args(char*** destination, char** buf);
 int kachow(char** args);
 int launch(char** args);
 
 //Take a line of user input
-void read_stdin(char** buf){
+int read_stdin(char** buf){
 	//Current position within input string
 	int pos = 0;
 
@@ -40,15 +26,19 @@ void read_stdin(char** buf){
 		//Take a character from stdin
 		c = getchar();
 
+		//Check for Ctrl-D
+		if (c==EOF && pos==0){
+			return 0;
+		}
 		//Handle too-long inputs
 		if (pos >= MAX_CHARS-1){
 			fprintf(stderr, "Your input was too long!\n");
 			exit(EXIT_FAILURE);
 		}
 		//If we reach a newline or EOF, replace with \0 and return
-		if (c=='\n' || c==EOF){
+		if (c=='\n' || (c==EOF && pos!=0)){
 			(*buf)[pos] = '\0';
-			return;
+			return 1;
 		}
 		//else we add a character to the buffer
 		else {
@@ -95,7 +85,18 @@ int kachow(char** args){
 		
 	//Built-in functions
 	if (strcmp(args[0], "setenv")==0){
-		
+		if (args[1]==NULL){
+			perror("No environment variable specified");
+			return 1;
+		}	
+		else if (args[2]==NULL){
+			setenv(args[1], NULL, 9001);
+			return 1;
+		}
+		else {
+			setenv(args[1], args[2], 9001);
+			return 1;
+		}
 	}
 	else if (strcmp(args[0], "unsetenv")==0){
 		
@@ -167,8 +168,9 @@ int main(int argc, char **argv){
 		}
 
 		printf("? ");
-		read_stdin(&buf);
+		if (!read_stdin(&buf)) break;
 		split_args(&args, &buf);
+
 
 		//EXECUTE
 		keep_running = kachow(args);
