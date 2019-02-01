@@ -18,7 +18,6 @@ int launch(char** args);
 
 //Take a line of user input
 int read_stdin(char** buf){
-	printf("ok so far\n");
 	
 	//Allocate memory for input string
 	*buf = malloc(sizeof(char)*MAX_CHARS);
@@ -178,15 +177,19 @@ int main(int argc, char **argv){
 
 	//.kapishrc loop goes here
 	//open .kapishrc
-	FILE *config_script = fopen(strncat(getenv("HOME"), CONFIG_SCRIPT_NAME, 9), "r");
+	char* config_script_path = strncat(strncat(getenv("HOME"), "/", 1), CONFIG_SCRIPT_NAME, 9);
+	printf("Opening from %s\n", config_script_path);
+	//FILE *config_script = fopen(strncat(getenv("HOME"), CONFIG_SCRIPT_NAME, 9), "r");
+	FILE *config_script = fopen(config_script_path, "r");
+	
 	//ensure file opened correctly
 	if (config_script==NULL){
-		fprintf(stderr, "unable to open %s", CONFIG_SCRIPT_NAME);
+		fprintf(stderr, "unable to open %s\n", CONFIG_SCRIPT_NAME);
 		exit(1);
 	}
 
 	//Allocate memory for input string
-	*buf = malloc(sizeof(char)*MAX_CHARS);
+	buf = malloc(sizeof(char)*MAX_CHARS);
 
 	while (fgets(buf, MAX_CHARS, config_script)){
 		printf("? %s", buf);
