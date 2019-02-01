@@ -3,6 +3,7 @@
 #include <string.h>
 #include <unistd.h>
 #include <sys/wait.h>
+#include <signal.h>
 
 int setenv(const char *var_name, const char *new_value, int change_flag);
 int unsetenv(const char *var_name);
@@ -151,6 +152,8 @@ int launch(char **args){
 		perror("Fork failed");
 	}
 	else if (pid==0){
+		//Re-enable Ctrl-C
+		signal(SIGINT, SIG_DFL);
 		//CHILD
 		if (execvp(args[0], args) == -1) { //this is where it switches to the new process
 			perror("Fork failed");
@@ -163,23 +166,25 @@ int launch(char **args){
 			//wait for the child to finish
 			waitpid(pid, &status, WUNTRACED);
 		//while the child has not finished
-		}while (!WIFEXITED(status));
+		//WIFEXITED catches normal completion
+		//WIFSIGNALED catches a Ctrl-C
+		}while (!WIFEXITED(status) && !WIFSIGNALED(status));
 	}
 	return 1;
 }
 
 int main(int argc, char **argv){
 
+	//Prevent Ctrl-C from killing kapish
+	signal(SIGINT, SIG_IGN);
+
 	//Buffer to contain user input
 	char *buf;
 	//Argument storage
 	char **args;
 
-	//.kapishrc loop goes here
 	//open .kapishrc
 	char* config_script_path = strncat(strncat(getenv("HOME"), "/", 1), CONFIG_SCRIPT_NAME, 9);
-	printf("Opening from %s\n", config_script_path);
-	//FILE *config_script = fopen(strncat(getenv("HOME"), CONFIG_SCRIPT_NAME, 9), "r");
 	FILE *config_script = fopen(config_script_path, "r");
 	
 	//ensure file opened correctly
