@@ -181,7 +181,7 @@ int main(int argc, char **argv){
 	FILE *config_script = fopen(strncat(getenv("HOME"), CONFIG_SCRIPT_NAME, 9), "r");
 	//ensure file opened correctly
 	if (config_script==NULL){
-		perror("unable to open %s", CONFIG_SCRIPT_NAME);
+		fprintf(stderr, "unable to open %s", CONFIG_SCRIPT_NAME);
 		exit(1);
 	}
 
